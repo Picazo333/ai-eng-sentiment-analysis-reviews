@@ -1,0 +1,20 @@
+__pycache__
+.env
+.learn
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+.cache/
+huggingface/
+
+# Model weights stay out of the repo. The pinned pipeline downloads them at runtime.
+*.bin
+*.safetensors
+*.h5
+*.msgpack
+*.pt
+*.pth
+*.onnx
+*.ckpt
+models/**
+!models/.gitkeep
