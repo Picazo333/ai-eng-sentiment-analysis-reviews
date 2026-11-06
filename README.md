@@ -1,112 +1,64 @@
-# Data Science Project Boilerplate
+# Sentiment analysis on customer reviews — WeLoveReviews
 
-This boilerplate is designed to kickstart data science projects by providing a basic setup for database connections, data processing, and machine learning model development. It includes a structured folder organization for your datasets and a set of pre-defined Python packages necessary for most data science tasks.
+Harbor House Café, 500 service reviews. The business question is whether the written sentiment matches a **4.5 / 5** average.
 
-## Structure
+`src/explore.ipynb` is the analysis (Spanish, saved with executed outputs). `src/app.py` is the production path: one load of a pinned Hugging Face model, then a CSV.
 
-The project is organized as follows:
+## Result
 
-- **`src/app.py`** → Main Python script where your project will run.
-- **`src/explore.ipynb`** → Notebook for exploration and testing. Once exploration is complete, migrate the clean code to `app.py`.
-- **`src/utils.py`** → Auxiliary functions, such as database connection.
-- **`requirements.txt`** → List of required Python packages.
-- **`models/`** → Will contain your SQLAlchemy model classes.
-- **`data/`** → Stores datasets at different stages:
-  - **`data/raw/`** → Raw data.
-  - **`data/interim/`** → Temporarily transformed data.
-  - **`data/processed/`** → Data ready for analysis.
+Same bands on both rows: 1–2 negative, 3 neutral, 4–5 positive. The human mean of this file is the stated 4.5.
 
+| Source | Positive (4–5) | Neutral (3) | Negative (1–2) | Mean stars |
+| --- | --- | --- | --- | --- |
+| Human rating | 86.4% | 7.6% | 6.0% | 4.500 |
+| nlptown text | 82.4% | 8.2% | 9.4% | 4.398 |
+| Gap (model − human rating) | −4.0 pp | +0.6 pp | +3.4 pp | −0.102 |
 
-## ⚡ Initial Setup in Codespaces (Recommended)
+The text supports the 4.5. Sixteen reviews are strict false negatives (human 4–5, model 1–2). The examples, the phrase pattern, and the manual read of 18 reviews are in the notebook conclusions.
 
-No manual setup is required, as **Codespaces is automatically configured** with the predefined files created by the academy for you. Just follow these steps:
+## Run
 
-1. **Wait for the environment to configure automatically**.
-   - All necessary packages and the database will install themselves.
-   - The automatically created `username` and `db_name` are in the **`.env`** file at the root of the project.
-2. **Once Codespaces is ready, you can start working immediately**.
-
-
-## 💻 Local Setup (Only if you can't use Codespaces)
-
-**Prerequisites**
-
-Make sure you have Python 3.11+ installed on your machine. You will also need pip to install the Python packages.
-
-**Installation**
-
-Clone the project repository to your local machine.
-
-Navigate to the project directory and install the required Python packages:
+Verified with Python 3.12. `torch` is the CPU wheel.
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-**Create a database (if necessary)**
-
-Create a new database within the Postgres engine by customizing and executing the following command:
-
-```bash
-$ psql -U postgres -c "DO \$\$ BEGIN 
-    CREATE USER my_user WITH PASSWORD 'my_password'; 
-    CREATE DATABASE my_database OWNER my_user; 
-END \$\$;"
-```
-Connect to the Postgres engine to use your database, manipulate tables, and data:
-
-```bash
-$ psql -U my_user -d my_database
-```
-
-Once inside PSQL, you can create tables, run queries, insert, update, or delete data, and much more!
-
-**Environment Variables**
-
-Create a .env file in the root directory of the project to store your environment variables, such as your database connection string:
-
-```makefile
-DATABASE_URL="postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DB_NAME>"
-
-#example
-DATABASE_URL="postgresql://my_user:my_password@localhost:5432/my_database"
-```
-
-## Running the Application
-
-To run the application, execute the app.py script from the root directory of the project:
-
-```bash
 python src/app.py
+pytest
 ```
 
-## Adding Models
+`python src/app.py` reads `data/raw/reviews.csv` and writes `data/processed/reviews_with_sentiment.csv`. The first run downloads the model. Weights are not in git.
 
-To add SQLAlchemy model classes, create new Python script files within the models/ directory. These classes should be defined according to your database schema.
+Re-execute the notebook from the repository root:
 
-Example model definition (`models/example_model.py`):
-
-```py
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
-
-Base = declarative_base()
-
-class ExampleModel(Base):
-    __tablename__ = 'example_table'
-    id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(unique=True)
+```bash
+python -m nbconvert --to notebook --execute --inplace src/explore.ipynb
 ```
 
-## Working with Data
+## Layout
 
-You can place your raw datasets in the data/raw directory, intermediate datasets in data/interim, and processed datasets ready for analysis in data/processed.
+| Path | Role |
+| --- | --- |
+| `data/raw/reviews.csv` | Official 500 reviews |
+| `data/processed/reviews_with_sentiment.csv` | Stars, band, score, false-negative flag |
+| `src/explore.ipynb` | Objectives through conclusions |
+| `src/app.py` | Production inference |
+| `src/utils.py` | Template database helper. This analysis does not call it |
+| `tests/test_app.py` | Bands, single load, CSV contract, one real-model smoke test |
+| `PROVENANCE.md` | Template commit and dataset hash |
 
-To process data, you can modify the app.py script to include your data processing steps, using pandas for data manipulation and analysis.
+## Model
 
-## Contributors
+- `nlptown/bert-base-multilingual-uncased-sentiment`
+- Revision `8f6f4e3a8f70be4b65d3a4a8762b6d781cda240d`
+- Loaded once with `pipeline("sentiment-analysis", revision=...)`
+- Bands: 1–2 Negative, 3 Neutral, 4–5 Positive
 
-This template was built as part of the [Data Science and Machine Learning Bootcamp](https://4geeksacademy.com/us/coding-bootcamps/datascience-machine-learning) by 4Geeks Academy by [Alejandro Sanchez](https://twitter.com/alesanchezr) and many other contributors. Learn more about [4Geeks Academy BootCamp programs](https://4geeksacademy.com/us/programs) here.
+The model was fine-tuned on product reviews. These rows are service reviews. That mismatch is part of the notebook, not a reason to swap the model.
 
-Other templates and resources like this can be found on the school's GitHub page.
+## Provenance
+
+Imported from [machine-learning-python-template](https://github.com/4GeeksAcademy/machine-learning-python-template) at `b49eff6673b76ba5b0003103e32f62a2eb9904a4`. That commit has no `LICENSE` file, and none was added here. Dataset sha256 and the model revision are in `PROVENANCE.md`.
+
+There is no user interface in this project.

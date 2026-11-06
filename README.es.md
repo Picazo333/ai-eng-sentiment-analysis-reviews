@@ -1,112 +1,64 @@
-# Plantilla de Proyecto de Ciencia de Datos
+# Análisis de sentimiento en reseñas — WeLoveReviews
 
-Esta plantilla está diseñada para impulsar proyectos de ciencia de datos proporcionando una configuración básica para conexiones de base de datos, procesamiento de datos, y desarrollo de modelos de aprendizaje automático. Incluye una organización estructurada de carpetas para tus conjuntos de datos y un conjunto de paquetes de Python predefinidos necesarios para la mayoría de las tareas de ciencia de datos.
+Harbor House Café, 500 reseñas de servicio. La pregunta es si el sentimiento del texto acompaña una media de **4.5 / 5**.
+
+`src/explore.ipynb` es el análisis, en español y con salidas ejecutadas. `src/app.py` es la ruta de producción: el modelo se carga una vez y el script escribe el CSV.
+
+## Resultado
+
+La misma regla en las dos filas: 1–2 negativo, 3 neutral, 4–5 positivo. La media humana de este archivo es el 4.5 anunciado.
+
+| Fuente | Positivo (4–5) | Neutral (3) | Negativo (1–2) | Media de estrellas |
+| --- | --- | --- | --- | --- |
+| Rating humano | 86.4% | 7.6% | 6.0% | 4.500 |
+| Texto nlptown | 82.4% | 8.2% | 9.4% | 4.398 |
+| Brecha (modelo − rating) | −4.0 pp | +0.6 pp | +3.4 pp | −0.102 |
+
+El texto sostiene el 4.5. Hay 16 falsos negativos estrictos (humano 4–5, modelo 1–2). Los ejemplos, el patrón de frases y la lectura de 18 reseñas están en las conclusiones del notebook.
+
+## Cómo ejecutarlo
+
+Comprobado con Python 3.12. `torch` es la rueda de CPU.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python src/app.py
+pytest
+```
+
+`python src/app.py` lee `data/raw/reviews.csv` y escribe `data/processed/reviews_with_sentiment.csv`. La primera ejecución descarga el modelo. Los pesos no van en git.
+
+Para volver a ejecutar el notebook, desde la raíz del repositorio:
+
+```bash
+python -m nbconvert --to notebook --execute --inplace src/explore.ipynb
+```
 
 ## Estructura
 
-El proyecto está organizado de la siguiente manera:
+| Ruta | Para qué |
+| --- | --- |
+| `data/raw/reviews.csv` | 500 reseñas oficiales |
+| `data/processed/reviews_with_sentiment.csv` | Estrellas, banda, score y falso negativo |
+| `src/explore.ipynb` | Del objetivo a las conclusiones |
+| `src/app.py` | Inferencia de producción |
+| `src/utils.py` | Ayudante de base de datos de la plantilla. Este análisis no lo llama |
+| `tests/test_app.py` | Bandas, carga única, contrato del CSV y un smoke test con el modelo real |
+| `PROVENANCE.md` | Commit de la plantilla y hash del dataset |
 
-- **`src/app.py`** → Script principal de Python donde correrá tu proyecto.
-- **`src/explore.ipynb`** → Notebook para exploración y pruebas. Una vez finalizada la exploración, migra el código limpio a `app.py`.
-- **`src/utils.py`** → Funciones auxiliares, como conexión a bases de datos.
-- **`requirements.txt`** → Lista de paquetes de Python necesarios.
-- **`models/`** → Contendrá tus clases de modelos SQLAlchemy.
-- **`data/`** → Almacena los datasets en diferentes etapas:
-  - **`data/raw/`** → Datos sin procesar.
-  - **`data/interim/`** → Datos transformados temporalmente.
-  - **`data/processed/`** → Datos listos para análisis.
+## Modelo
 
+- `nlptown/bert-base-multilingual-uncased-sentiment`
+- Revisión `8f6f4e3a8f70be4b65d3a4a8762b6d781cda240d`
+- Una carga con `pipeline("sentiment-analysis", revision=...)`
+- Bandas: 1–2 Negative, 3 Neutral, 4–5 Positive
 
-## ⚡ Configuración Inicial en Codespaces (Recomendado)
+El modelo se afinó con reseñas de productos. Estas filas son de servicio. Ese desajuste se analiza en el notebook; no se cambia el modelo.
 
-No es necesario realizar ninguna configuración manual, ya que **Codespaces se configura automáticamente** con los archivos predefinidos que ha creado la academia para ti. Simplemente sigue estos pasos:
+## Procedencia
 
-1. **Espera a que el entorno se configure automáticamente**.
-   - Todos los paquetes necesarios y la base de datos se instalarán por sí mismos.
-   - El `username` y `db_name` creados automáticamente están en el archivo **`.env`** en la raíz del proyecto.
-2. **Una vez que Codespaces esté listo, puedes comenzar a trabajar inmediatamente**.
+Copia de [machine-learning-python-template](https://github.com/4GeeksAcademy/machine-learning-python-template) en el commit `b49eff6673b76ba5b0003103e32f62a2eb9904a4`. Ese commit no trae archivo `LICENSE`, y aquí no se inventa uno. El sha256 del dataset y la revisión del modelo están en `PROVENANCE.md`.
 
-
-## 💻 Configuración en Local (Solo si no puedes usar Codespaces)
-
-**Prerrequisitos**
-
-Asegúrate de tener Python 3.11+ instalado en tu máquina. También necesitarás pip para instalar los paquetes de Python.
-
-**Instalación**
-
-Clona el repositorio del proyecto en tu máquina local.
-
-Navega hasta el directorio del proyecto e instala los paquetes de Python requeridos:
-
-```bash
-pip install -r requirements.txt
-```
-
-**Crear una base de datos (si es necesario)**
-
-Crea una nueva base de datos dentro del motor Postgres personalizando y ejecutando el siguiente comando: 
-
-```bash
-$ psql -U postgres -c "DO \$\$ BEGIN 
-    CREATE USER mi_usuario WITH PASSWORD 'mi_contraseña'; 
-    CREATE DATABASE mi_base_de_datos OWNER mi_usuario; 
-END \$\$;"
-```
-Conéctate al motor Postgres para usar tu base de datos, manipular tablas y datos: 
-
-```bash
-$ psql -U mi_usuario -d mi_base_de_datos
-```
-
-¡Una vez que estés dentro de PSQL podrás crear tablas, hacer consultas, insertar, actualizar o eliminar datos y mucho más!
-
-**Variables de entorno**
-
-Crea un archivo .env en el directorio raíz del proyecto para almacenar tus variables de entorno, como tu cadena de conexión a la base de datos:
-
-```makefile
-DATABASE_URL="postgresql://<USUARIO>:<CONTRASEÑA>@<HOST>:<PUERTO>/<NOMBRE_BD>"
-
-#example
-DATABASE_URL="postgresql://mi_usuario:mi_contraseña@localhost:5432/mi_base_de_datos"
-```
-
-## Ejecutando la Aplicación
-
-Para ejecutar la aplicación, ejecuta el script app.py desde la raíz del directorio del proyecto:
-
-```bash
-python src/app.py
-```
-
-## Añadiendo Modelos
-
-Para añadir clases de modelos SQLAlchemy, crea nuevos archivos de script de Python dentro del directorio models/. Estas clases deben ser definidas de acuerdo a tu esquema de base de datos.
-
-Definición del modelo de ejemplo (`models/example_model.py`):
-
-```py
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
-
-Base = declarative_base()
-
-class ExampleModel(Base):
-    __tablename__ = 'example_table'
-    id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(unique=True)
-```
-
-## Trabajando con Datos
-
-Puedes colocar tus conjuntos de datos brutos en el directorio data/raw, conjuntos de datos intermedios en data/interim, y los conjuntos de datos procesados listos para el análisis en data/processed.
-
-Para procesar datos, puedes modificar el script app.py para incluir tus pasos de procesamiento de datos, utilizando pandas para la manipulación y análisis de datos.
-
-## Contribuyentes
-
-Esta plantilla fue construida como parte del [Data Science and Machine Learning Bootcamp](https://4geeksacademy.com/us/coding-bootcamps/datascience-machine-learning) de 4Geeks Academy por [Alejandro Sanchez](https://twitter.com/alesanchezr) y muchos otros contribuyentes. Descubre más sobre [los programas BootCamp de 4Geeks Academy](https://4geeksacademy.com/us/programs) aquí.
-
-Otras plantillas y recursos como este se pueden encontrar en la página de GitHub de la escuela.
+Este proyecto no tiene interfaz de usuario.
