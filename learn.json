@@ -1,0 +1,44 @@
+{
+  "gitpod": true,
+  "title": {
+    "en": "Sentiment Analysis on Customer Reviews — WeLoveReviews",
+    "es": "Análisis de Sentimiento en Reseñas de Clientes — WeLoveReviews"
+  },
+  "description": {
+    "en": "Start from the machine-learning-python-template: run the EDA prompt in `src/explore.ipynb`, integrate `nlptown/bert-base-multilingual-uncased-sentiment` in `src/app.py`, export a processed CSV with sentiment labels, find false negatives from product-vs-service domain mismatch, and compare sentiment breakdown against a 4.5-star average.",
+    "es": "Parte del machine-learning-python-template: ejecuta el prompt de EDA en `src/explore.ipynb`, integra `nlptown/bert-base-multilingual-uncased-sentiment` en `src/app.py`, exporta un CSV procesado con etiquetas de sentimiento, encuentra falsos negativos por desajuste de dominio producto vs servicio y compara la distribución de sentimiento con un promedio de 4.5 estrellas."
+  },
+  "status": "draft",
+  "template_url": "https://github.com/4GeeksAcademy/machine-learning-python-template",
+  "slug": "ai-eng-sentiment-analysis-reviews",
+  "coverImage": "ai-coding.svg",
+  "difficulty": "intermediate",
+  "duration": 2,
+  "technologies": [
+    "python",
+    "jupyter",
+    "huggingface",
+    "transformers",
+    "pytorch",
+    "machine-learning",
+    "sentiment-analysis",
+    "data-analysis"
+  ],
+  "translations": ["es", "en"],
+  "projectType": "project",
+  "telemetry": {
+    "batch": "https://breathecode.herokuapp.com/v1/assignment/me/telemetry?asset_id=3771"
+  },
+  "solution": "https://github.com/4GeeksAcademy/ai-engineering-syllabus/blob/main/content/projects/existing-model-sentiment-analysis-reviews/.learn/solution/README.md",
+  "preview": "https://raw.githubusercontent.com/4GeeksAcademy/ai-engineering-syllabus/main/content/projects/existing-model-sentiment-analysis-reviews/.learn/preview.png",
+  "sharing": [
+    {
+      "en": "I just completed Sentiment Analysis on Customer Reviews — WeLoveReviews with LearnPack @4GeeksAcademy. EDA in src/explore.ipynb, Hugging Face inference in src/app.py, processed CSV, and domain-mismatch false negatives vs 4.5-star average. Check it out: https://github.com/4GeeksAcademy/ai-engineering-syllabus/tree/main/content/projects/ai-eng-sentiment-analysis-reviews #AIEngineering #LearnPack #4GeeksAcademy #python #huggingface #machinelearning",
+      "es": "Acabo de completar Análisis de Sentimiento en Reseñas de Clientes — WeLoveReviews con LearnPack @4GeeksAcademy. EDA en src/explore.ipynb, inferencia Hugging Face en src/app.py, CSV procesado y falsos negativos por desajuste de dominio vs promedio 4.5 estrellas. Mira el proyecto: https://github.com/4GeeksAcademy/ai-engineering-syllabus/tree/main/content/projects/ai-eng-sentiment-analysis-reviews #AIEngineering #LearnPack #4GeeksAcademy #python #huggingface #machinelearning"
+    },
+    {
+      "en": "Built and shipped: Sentiment Analysis on Customer Reviews — WeLoveReviews. Learning by building with @4GeeksAcademy. ML template, EDA prompt, src/explore.ipynb narrative, src/app.py pipeline, and processed sentiment CSV. https://github.com/4GeeksAcademy/ai-engineering-syllabus/tree/main/content/projects/ai-eng-sentiment-analysis-reviews #AIEngineering #LearnPack #4GeeksAcademy #python #transformers #sentimentanalysis",
+      "es": "Construido y publicado: Análisis de Sentimiento en Reseñas de Clientes — WeLoveReviews. Aprendiendo con proyectos reales en @4GeeksAcademy. Plantilla ML, prompt EDA, narrativa en src/explore.ipynb, pipeline en src/app.py y CSV de sentimiento procesado. https://github.com/4GeeksAcademy/ai-engineering-syllabus/tree/main/content/projects/ai-eng-sentiment-analysis-reviews #AIEngineering #LearnPack #4GeeksAcademy #python #transformers #sentimentanalysis"
+    }
+  ]
+}
